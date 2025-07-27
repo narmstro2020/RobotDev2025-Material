@@ -26,7 +26,6 @@ public class Robot extends TimedRobot {
         addressableLED.setLength(buffer.getLength());
         addressableLED.setData(buffer);
         addressableLED.start();
-
     }
 
     @Override
