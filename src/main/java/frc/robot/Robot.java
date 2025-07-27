@@ -4,30 +4,22 @@
 
 package frc.robot;
 
-import edu.wpi.first.units.measure.Distance;
+import com.revrobotics.sim.SparkMaxSim;
+import com.revrobotics.spark.SparkMax;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.util.Color;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
+import static com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless;
 
 public class Robot extends TimedRobot {
 
+    private final SparkMax intakeRev = new SparkMax(15, kBrushless);
+    private final SparkMaxSim intakeRevSim = new SparkMaxSim(intakeRev, DCMotor.getNeo550(1));
     private final XboxController xboxController = new XboxController(0);
-    private final LEDPattern red = LEDPattern.solid(Color.kRed);
-    private final LEDPattern black = LEDPattern.solid(Color.kBlack);
-    private final LEDPattern rainbow = LEDPattern.rainbow(255, 255);
-    private final Distance ledSpacing = Meters.of(1 / 100.0);
-    private final LEDPattern scrollingRainbow = rainbow.scrollAtAbsoluteSpeed(MetersPerSecond.of(1), ledSpacing);
-    private final AddressableLEDBuffer buffer = new AddressableLEDBuffer(100);
-    private final AddressableLED addressableLED = new AddressableLED(0);
+    private double lastTimeSeconds;
 
     public Robot() {
-        addressableLED.setLength(buffer.getLength());
-        addressableLED.setData(buffer);
-        addressableLED.start();
     }
-
 
 
     @Override
@@ -41,34 +33,12 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        if (xboxController.getAButton()) {
-            red.applyTo(buffer);
-            addressableLED.setData(buffer);
+        if(xboxController.getAButton()){
+            intakeRev.setVoltage(6.0);
         }
 
-        if (xboxController.getAButtonReleased()) {
-            black.applyTo(buffer);
-            addressableLED.setData(buffer);
-        }
-
-        if (xboxController.getBButton()) {
-            rainbow.applyTo(buffer);
-            addressableLED.setData(buffer);
-        }
-
-        if (xboxController.getBButtonReleased()) {
-            black.applyTo(buffer);
-            addressableLED.setData(buffer);
-        }
-
-        if (xboxController.getXButton()) {
-            scrollingRainbow.applyTo(buffer);
-            addressableLED.setData(buffer);
-        }
-
-        if(xboxController.getXButtonReleased()){
-            black.applyTo(buffer);
-            addressableLED.setData(buffer);
+        if(xboxController.getAButtonReleased()){
+            intakeRev.setVoltage(0.0);
         }
 
     }
@@ -85,6 +55,11 @@ public class Robot extends TimedRobot {
 
     @Override
     public void simulationPeriodic() {
-
+        double currentTimeSeconds = Timer.getFPGATimestamp();
+        double dt = currentTimeSeconds - lastTimeSeconds;
+        lastTimeSeconds = currentTimeSeconds;
+        double voltage = intakeRev.getBusVoltage() * intakeRev.getAppliedOutput();
+        double velocity = voltage / RobotController.getBatteryVoltage() * DCMotor.getNeo550(1).freeSpeedRadPerSec;
+        intakeRevSim.iterate(velocity, RobotController.getBatteryVoltage(), dt);
     }
 }
