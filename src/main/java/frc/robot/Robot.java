@@ -4,8 +4,7 @@
 
 package frc.robot;
 
-import com.revrobotics.sim.SparkMaxSim;
-import com.revrobotics.spark.SparkMax;
+import com.ctre.phoenix6.CANBus;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.*;
 
@@ -13,8 +12,10 @@ import static com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless;
 
 public class Robot extends TimedRobot {
 
-    private final SparkMax intakeRev = new SparkMax(15, kBrushless);
-    private final SparkMaxSim intakeRevSim = new SparkMaxSim(intakeRev, DCMotor.getNeo550(1));
+    private final CANBus canbus = new CANBus("rio");
+    private final IntakeCTRE intakeCTRE = new IntakeCTRE(15, canbus);
+    private final IntakeRev intakeRev = new IntakeRev(14, kBrushless, DCMotor.getNeo550(1));
+
     private final XboxController xboxController = new XboxController(0);
     private double lastTimeSeconds;
 
@@ -41,6 +42,13 @@ public class Robot extends TimedRobot {
             intakeRev.setVoltage(0.0);
         }
 
+        if (xboxController.getBButton()){
+            intakeCTRE.setVoltage(6.0);
+        }
+
+        if (xboxController.getBButtonReleased()){
+            intakeCTRE.setVoltage(0.0);
+        }
     }
 
     @Override
@@ -56,10 +64,10 @@ public class Robot extends TimedRobot {
     @Override
     public void simulationPeriodic() {
         double currentTimeSeconds = Timer.getFPGATimestamp();
-        double dt = currentTimeSeconds - lastTimeSeconds;
+        double dtSeconds = currentTimeSeconds - lastTimeSeconds;
         lastTimeSeconds = currentTimeSeconds;
-        double voltage = intakeRev.getBusVoltage() * intakeRev.getAppliedOutput();
-        double velocity = voltage / RobotController.getBatteryVoltage() * DCMotor.getNeo550(1).freeSpeedRadPerSec;
-        intakeRevSim.iterate(velocity, RobotController.getBatteryVoltage(), dt);
+
+        intakeRev.simulate(dtSeconds);
+        intakeCTRE.simulate(dtSeconds);
     }
 }
