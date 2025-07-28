@@ -7,7 +7,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static edu.wpi.first.units.Units.Volts;
 
@@ -15,28 +14,19 @@ public class RevFlywheelSubsystem extends FlywheelSubsystem {
 
     private final SparkMax sparkMax;
     private final SparkMaxSim sparkMaxSim;
-    private final String name;
     private final MutVoltage voltage = Volts.mutable(0.0);
 
     public RevFlywheelSubsystem(String name, int deviceId, MotorType motorType, DCMotor dcMotor) {
-        this.name = name;
+        super(name);
         sparkMax = new SparkMax(deviceId, motorType);
         sparkMaxSim = new SparkMaxSim(sparkMax, dcMotor);
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public void periodic() {
-        if (state == State.Stopped) {
-            sparkMax.stopMotor();
-            SmartDashboard.putString(getName() + ": " + "Current State: ", state.name());
-        } else if (state == State.Voltage) {
-            sparkMax.setVoltage(voltageSetpoint.baseUnitMagnitude());
-            SmartDashboard.putString(getName() + ": " + "Current State: ", state.name() + ": " + voltageSetpoint);
+    public final void periodic() {
+        switch(state) {
+            case Stopped -> sparkMax.stopMotor();
+            case Voltage -> sparkMax.setVoltage(voltageSetpoint.baseUnitMagnitude());
         }
         super.periodic();
     }

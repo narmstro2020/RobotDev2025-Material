@@ -25,14 +25,20 @@ public abstract class FlywheelSubsystem implements Subsystem {
     protected State state = Stopped;
     private double lastTimeSeconds;
     protected double dtSeconds;
-    private final NetworkTable table = NetworkTableInstance.getDefault().getTable(getName());
-    private final DoublePublisher voltagePublisher = table.getDoubleTopic("Voltage [V]")
-            .publish();
-    private final StringPublisher statePublisher = table.getStringTopic("State")
-            .publish();
+    private final String name;
+    private final DoublePublisher voltagePublisher;
+    private final DoublePublisher voltageSetpointPublisher;
+    private final StringPublisher statePublisher;
 
 
-    protected FlywheelSubsystem() {
+    protected FlywheelSubsystem(String name) {
+        this.name = name;
+        NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
+        voltagePublisher = table.getDoubleTopic("Voltage [V]").publish();
+        voltageSetpointPublisher = table.getDoubleTopic("Voltage Setpoint [V]").publish();
+        statePublisher = table.getStringTopic("State").publish();
+        voltagePublisher.set(voltageSetpoint.baseUnitMagnitude());
+        statePublisher.set(state.name());
         register();
         voltagePublisher.set(voltageSetpoint.baseUnitMagnitude());
         statePublisher.set(state.name());
@@ -40,7 +46,9 @@ public abstract class FlywheelSubsystem implements Subsystem {
 
     @Override
     public void periodic() {
-
+        voltagePublisher.set(getVoltage().baseUnitMagnitude());
+        voltageSetpointPublisher.set(voltageSetpoint.baseUnitMagnitude());
+        statePublisher.set(state.name());
     }
 
     @Override
@@ -52,6 +60,10 @@ public abstract class FlywheelSubsystem implements Subsystem {
 
     protected abstract Voltage getVoltage();
 
+    @Override
+    public String getName() {
+        return name;
+    }
 
     public Command createSetVoltage(Voltage voltage) {
         return runOnce(() -> voltageSetpoint.mut_replace(voltage))
