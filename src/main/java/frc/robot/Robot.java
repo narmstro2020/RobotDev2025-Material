@@ -22,8 +22,8 @@ public class Robot extends TimedRobot {
         CommandXboxController controller = new CommandXboxController(0);
 
         CANBus canbus = new CANBus("rio");
-        IntakeCTRESubsystem intakeCTRESubsystem = new IntakeCTRESubsystem("CTRE Intake", 15, canbus);
-        IntakeRevSubsystem intakeRevSubsystem = new IntakeRevSubsystem("Rev Intake", 14, kBrushless, DCMotor.getNeo550(1));
+        IntakeSubsystem intakeCTRESubsystem = new IntakeCTRESubsystem("CTRE Intake", 15, canbus);
+        IntakeSubsystem intakeRevSubsystem = new IntakeRevSubsystem("Rev Intake", 14, kBrushless, DCMotor.getNeo550(1));
 
         controller.a().onTrue(intakeRevSubsystem.createSetVoltage(Volts.of(6.0)));
         controller.a().onFalse(intakeRevSubsystem.createStop());
