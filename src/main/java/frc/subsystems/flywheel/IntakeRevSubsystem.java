@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.subsystems.flywheel;
 
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
