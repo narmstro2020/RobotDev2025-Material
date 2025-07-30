@@ -11,9 +11,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.subsystems.flywheel.IntakeCTRESubsystem;
-import frc.subsystems.flywheel.IntakeRevSubsystem;
-import frc.subsystems.flywheel.IntakeSubsystem;
 
 import static com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless;
 import static edu.wpi.first.units.Units.Volts;

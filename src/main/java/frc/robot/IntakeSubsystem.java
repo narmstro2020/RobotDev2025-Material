@@ -1,4 +1,4 @@
-package frc.subsystems.flywheel;
+package frc.robot;
 
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Volts;
-import static frc.subsystems.flywheel.IntakeSubsystem.State.Stopped;
-import static frc.subsystems.flywheel.IntakeSubsystem.State.VoltageControl;
+import static frc.robot.IntakeSubsystem.State.Stopped;
+import static frc.robot.IntakeSubsystem.State.VoltageControl;
 
 public abstract class IntakeSubsystem implements Subsystem {
 

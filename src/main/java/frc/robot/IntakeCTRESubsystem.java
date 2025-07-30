@@ -1,4 +1,4 @@
-package frc.subsystems.flywheel;
+package frc.robot;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
